@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Film } from "lucide-react";
+import { Film, ImageOff } from "lucide-react";
+
+const FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='none'%3E%3Crect width='400' height='300' rx='8' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='14' fill='%239ca3af'%3EImage unavailable%3C/text%3E%3C/svg%3E";
 
 interface MediaItem {
   url: string;
@@ -24,6 +26,7 @@ export function MediaGallery({ items }: { items: MediaItem[] }) {
             src={active.url}
             alt="Food review media"
             className="h-full w-full object-contain transition-opacity duration-300"
+            onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
           />
         ) : (
           <video
@@ -55,6 +58,7 @@ export function MediaGallery({ items }: { items: MediaItem[] }) {
                   src={item.url}
                   alt=""
                   className="h-full w-full object-cover"
+                  onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-muted">

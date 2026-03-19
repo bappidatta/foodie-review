@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Film, Heart, MapPin, Star } from "lucide-react";
+
+const FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='none'%3E%3Crect width='400' height='300' rx='8' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='14' fill='%239ca3af'%3EImage unavailable%3C/text%3E%3C/svg%3E";
 import type { Review, Media, User } from "@/lib/db/schema";
 
 interface ReviewCardProps {
@@ -28,6 +30,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
                 src={firstMedia.url}
                 alt="Food review"
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
               />
             ) : (
               <div className="relative h-full w-full">
