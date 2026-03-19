@@ -22,7 +22,21 @@
 
 # misc
 .DS_Store
+Thumbs.db
+Desktop.ini
 *.pem
+
+# editor
+.vscode/
+.idea/
+
+# local database/files
+*.db
+*.sqlite
+*.sqlite3
+
+# accidental nested repo copy
+/foodie-review/
 
 # debug
 npm-debug.log*
