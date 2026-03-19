@@ -4,13 +4,17 @@ import { useState } from "react";
 import { createReview } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MediaUpload } from "@/components/media-upload";
 import { TagInput } from "@/components/tag-input";
+import { StarRating } from "@/components/star-rating";
 import { Loader2 } from "lucide-react";
 
 export function ReviewForm() {
   const [text, setText] = useState("");
+  const [restaurantName, setRestaurantName] = useState("");
+  const [rating, setRating] = useState(5);
   const [tags, setTags] = useState<string[]>([]);
   const [media, setMedia] = useState<{ url: string; type: "image" | "video" }[]>([]);
   const [pending, setPending] = useState(false);
@@ -23,6 +27,8 @@ export function ReviewForm() {
     try {
       const formData = new FormData();
       formData.set("text", text);
+      formData.set("restaurantName", restaurantName);
+      formData.set("rating", String(rating));
       formData.set("tags", tags.join(","));
       formData.set("media", JSON.stringify(media));
       await createReview(formData);
@@ -33,6 +39,22 @@ export function ReviewForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="restaurant-name">Restaurant / Place</Label>
+        <Input
+          id="restaurant-name"
+          placeholder="e.g. Joe's Pizza, Mom's Kitchen..."
+          value={restaurantName}
+          onChange={(e) => setRestaurantName(e.target.value)}
+          maxLength={200}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Rating</Label>
+        <StarRating value={rating} onChange={setRating} size="lg" />
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="media">Photos & Videos</Label>
         <MediaUpload value={media} onChange={setMedia} />

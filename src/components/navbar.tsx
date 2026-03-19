@@ -2,6 +2,7 @@ import Link from "next/link";
 import { UtensilsCrossed } from "lucide-react";
 import { AuthButton } from "@/components/auth-button";
 import { SearchBar } from "@/components/search-bar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   return (
@@ -12,7 +13,10 @@ export function Navbar() {
           <span className="hidden sm:inline">Foodie Review</span>
         </Link>
         <SearchBar />
-        <AuthButton />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <AuthButton />
+        </div>
       </div>
     </header>
   );

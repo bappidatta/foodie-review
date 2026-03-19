@@ -13,6 +13,8 @@ export async function createReview(formData: FormData) {
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   const text = formData.get("text") as string;
+  const restaurantName = (formData.get("restaurantName") as string) ?? "";
+  const rating = Math.min(5, Math.max(1, parseInt(formData.get("rating") as string) || 5));
   const tagNames = (formData.get("tags") as string)
     .split(",")
     .map((t) => t.trim().toLowerCase())
@@ -26,7 +28,7 @@ export async function createReview(formData: FormData) {
 
   const [review] = await db
     .insert(reviews)
-    .values({ authorId: session.user.id, text: text.trim() })
+    .values({ authorId: session.user.id, text: text.trim(), restaurantName: restaurantName.trim(), rating })
     .returning();
 
   if (mediaItems.length > 0) {
@@ -83,7 +85,7 @@ export async function deleteReview(reviewId: string) {
 // ── Update Review ──────────────────────────────────────
 export async function updateReview(
   reviewId: string,
-  data: { text: string; tags: string[] }
+  data: { text: string; tags: string[]; restaurantName?: string; rating?: number }
 ) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
@@ -101,9 +103,13 @@ export async function updateReview(
   if (!data.text?.trim()) throw new Error("Review text is required");
   if (data.text.length > 1000) throw new Error("Review text max 1000 characters");
 
+  const updateData: Record<string, unknown> = { text: data.text.trim(), updatedAt: new Date() };
+  if (data.restaurantName !== undefined) updateData.restaurantName = data.restaurantName.trim();
+  if (data.rating !== undefined) updateData.rating = Math.min(5, Math.max(1, data.rating));
+
   await db
     .update(reviews)
-    .set({ text: data.text.trim(), updatedAt: new Date() })
+    .set(updateData)
     .where(eq(reviews.id, reviewId));
 
   await db.delete(reviewTags).where(eq(reviewTags.reviewId, reviewId));
@@ -132,7 +138,7 @@ export async function updateReview(
 export async function getFeed(
   page = 1,
   limit = 12,
-  sort: "newest" | "popular" = "newest"
+  sort: "newest" | "popular" | "top-rated" = "newest"
 ) {
   const offset = (page - 1) * limit;
 
@@ -149,12 +155,19 @@ export async function getFeed(
           )
           .limit(limit)
           .offset(offset)
-      : await db
-          .select()
-          .from(reviews)
-          .orderBy(desc(reviews.createdAt))
-          .limit(limit)
-          .offset(offset);
+      : sort === "top-rated"
+        ? await db
+            .select()
+            .from(reviews)
+            .orderBy(desc(reviews.rating), desc(reviews.createdAt))
+            .limit(limit)
+            .offset(offset)
+        : await db
+            .select()
+            .from(reviews)
+            .orderBy(desc(reviews.createdAt))
+            .limit(limit)
+            .offset(offset);
 
   const results = await Promise.all(
     feedReviews.map(async (review) => {

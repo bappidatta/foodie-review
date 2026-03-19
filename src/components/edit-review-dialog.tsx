@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { TagInput } from "@/components/tag-input";
+import { StarRating } from "@/components/star-rating";
 import { updateReview } from "@/lib/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -14,12 +16,16 @@ interface EditReviewDialogProps {
     id: string;
     text: string;
     tags: string[];
+    restaurantName: string;
+    rating: number;
   };
 }
 
 export function EditReviewDialog({ review }: EditReviewDialogProps) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(review.text);
+  const [restaurantName, setRestaurantName] = useState(review.restaurantName);
+  const [rating, setRating] = useState(review.rating);
   const [tagList, setTagList] = useState<string[]>(review.tags);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
@@ -28,7 +34,12 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
     if (!text.trim()) return;
     setSaving(true);
     try {
-      await updateReview(review.id, { text: text.trim(), tags: tagList });
+      await updateReview(review.id, {
+        text: text.trim(),
+        tags: tagList,
+        restaurantName,
+        rating,
+      });
       toast.success("Review updated!");
       setOpen(false);
       router.refresh();
@@ -41,6 +52,8 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
 
   const handleCancel = () => {
     setText(review.text);
+    setRestaurantName(review.restaurantName);
+    setRating(review.rating);
     setTagList(review.tags);
     setOpen(false);
   };
@@ -65,6 +78,21 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
         >
           <X className="size-4" />
         </button>
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-sm font-medium">Restaurant / Place</p>
+        <Input
+          value={restaurantName}
+          onChange={(e) => setRestaurantName(e.target.value)}
+          placeholder="e.g. Joe's Pizza"
+          maxLength={200}
+        />
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-sm font-medium">Rating</p>
+        <StarRating value={rating} onChange={setRating} size="lg" />
       </div>
 
       <Textarea

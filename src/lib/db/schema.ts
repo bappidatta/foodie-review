@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, pgEnum, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, pgEnum, primaryKey, smallint } from "drizzle-orm/pg-core";
 
 // ── Enums ──────────────────────────────────────────────
 export const mediaTypeEnum = pgEnum("media_type", ["image", "video"]);
@@ -18,6 +18,8 @@ export const reviews = pgTable("reviews", {
   authorId: uuid("author_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  restaurantName: text("restaurant_name").notNull().default(""),
+  rating: smallint("rating").notNull().default(5),
   text: text("text").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

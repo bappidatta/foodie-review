@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Film, Heart } from "lucide-react";
+import { Film, Heart, MapPin, Star } from "lucide-react";
 import type { Review, Media, User } from "@/lib/db/schema";
 
 interface ReviewCardProps {
@@ -47,10 +47,22 @@ export function ReviewCard({ review }: ReviewCardProps) {
                 +{review.media.length - 1}
               </span>
             )}
+            {/* Rating overlay */}
+            <div className="absolute top-2 left-2 flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-0.5">
+              <Star className="size-3 fill-amber-400 text-amber-400" />
+              <span className="text-xs font-medium text-white">{review.rating}</span>
+            </div>
           </div>
         )}
 
         <CardHeader className="pb-2">
+          {/* Restaurant name */}
+          {review.restaurantName && (
+            <div className="flex items-center gap-1 text-sm font-semibold text-primary">
+              <MapPin className="size-3.5 shrink-0" />
+              <span className="truncate">{review.restaurantName}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Avatar className="size-6">
               <AvatarImage src={review.author.image ?? ""} />
@@ -63,6 +75,21 @@ export function ReviewCard({ review }: ReviewCardProps) {
               {new Date(review.createdAt).toLocaleDateString()}
             </span>
           </div>
+          {/* Rating (shown when no media) */}
+          {!firstMedia && (
+            <div className="flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star
+                  key={s}
+                  className={`size-3.5 ${
+                    s <= review.rating
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </CardHeader>
 
         <CardContent className="pb-2">

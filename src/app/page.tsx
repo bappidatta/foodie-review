@@ -9,7 +9,10 @@ export default async function HomePage({
 }) {
   const { page: pageStr, sort: sortStr } = await searchParams;
   const page = Math.max(1, parseInt(pageStr ?? "1", 10));
-  const sort = (sortStr === "popular" ? "popular" : "newest") as "newest" | "popular";
+  const validSorts = ["newest", "popular", "top-rated"] as const;
+  const sort = validSorts.includes(sortStr as typeof validSorts[number])
+    ? (sortStr as typeof validSorts[number])
+    : "newest";
 
   let feed;
   try {
@@ -51,6 +54,16 @@ export default async function HomePage({
           }`}
         >
           Popular
+        </a>
+        <a
+          href={`/?sort=top-rated`}
+          className={`rounded-md border px-4 py-1.5 text-sm transition-colors ${
+            sort === "top-rated"
+              ? "bg-foreground text-background"
+              : "hover:bg-muted"
+          }`}
+        >
+          Top Rated
         </a>
       </div>
 

@@ -86,9 +86,12 @@ export function CommentSection({
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
+                  <Link
+                    href={`/user/${comment.author.id}`}
+                    className="text-sm font-medium hover:underline"
+                  >
                     {comment.author.name ?? "Anonymous"}
-                  </span>
+                  </Link>
                   <span className="text-xs text-muted-foreground">
                     {new Date(comment.createdAt).toLocaleDateString("en-US", {
                       month: "short",

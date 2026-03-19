@@ -2,11 +2,12 @@ import { getReview, deleteReview, getLikeStatus, getComments } from "@/lib/actio
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { MediaGallery } from "@/components/media-gallery";
+import { StarRating } from "@/components/star-rating";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Trash2 } from "lucide-react";
+import { MapPin, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { LikeButton } from "@/components/like-button";
 import { CommentSection } from "@/components/comment-section";
@@ -35,8 +36,19 @@ export default async function ReviewDetailPage({
         <MediaGallery items={review.media} />
       )}
 
+      {/* Restaurant name & rating */}
+      <div className="mt-6 space-y-2">
+        {review.restaurantName && (
+          <div className="flex items-center gap-1.5 text-lg font-semibold text-primary">
+            <MapPin className="size-5 shrink-0" />
+            {review.restaurantName}
+          </div>
+        )}
+        <StarRating value={review.rating} readonly size="md" />
+      </div>
+
       {/* Author info */}
-      <div className="mt-6 flex items-center gap-3">
+      <div className="mt-4 flex items-center gap-3">
         <Link href={`/user/${review.author.id}`}>
           <Avatar className="size-10">
             <AvatarImage src={review.author.image ?? ""} />
@@ -63,7 +75,7 @@ export default async function ReviewDetailPage({
         <div className="ml-auto flex items-center gap-1">
           {isAuthor && (
             <EditReviewDialog
-              review={{ id: review.id, text: review.text, tags: review.tags }}
+              review={{ id: review.id, text: review.text, tags: review.tags, restaurantName: review.restaurantName, rating: review.rating }}
             />
           )}
           {isAuthor && (
