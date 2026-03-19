@@ -2,16 +2,19 @@
 
 import { useState, FormEvent } from "react";
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleSearch = () => {
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    } else {
+      router.push("/");
     }
   };
 
@@ -33,11 +36,20 @@ export function SearchBar() {
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          const nextValue = e.target.value;
+          setQuery(nextValue);
+          if (!nextValue.trim() && pathname === "/search") {
+            router.push("/");
+          }
+        }}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             setQuery("");
             e.currentTarget.blur();
+            if (pathname === "/search") {
+              router.push("/");
+            }
           }
         }}
         onFocus={() => setFocused(true)}
