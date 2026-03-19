@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { reviews, media, tags, reviewTags, users, likes, comments } from "@/lib/db/schema";
-import { eq, desc, sql, count, ilike, and } from "drizzle-orm";
+import { eq, desc, sql, count, ilike, and, or, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -381,14 +381,20 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
 
   const reviewerIds = reviewerMatches.map((r) => r.userId);
 
-  const searchCondition =
-    tagReviewIds.length > 0 && reviewerIds.length > 0
-      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}) OR ${reviews.authorId} = ANY(${reviewerIds}))`
-      : tagReviewIds.length > 0
-      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
-      : reviewerIds.length > 0
-      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.authorId} = ANY(${reviewerIds}))`
-      : sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`;
+  const searchConditions = [
+    ilike(reviews.text, q),
+    ilike(reviews.restaurantName, q),
+  ];
+
+  if (tagReviewIds.length > 0) {
+    searchConditions.push(inArray(reviews.id, tagReviewIds));
+  }
+
+  if (reviewerIds.length > 0) {
+    searchConditions.push(inArray(reviews.authorId, reviewerIds));
+  }
+
+  const searchCondition = or(...searchConditions);
 
   const feedReviews = await db
     .select()
