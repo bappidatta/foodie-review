@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, KeyboardEvent } from "react";
+import { useState, FormEvent } from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -15,16 +15,14 @@ export function SearchBar() {
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleSearch();
-    if (e.key === "Escape") {
-      setQuery("");
-      (e.target as HTMLInputElement).blur();
-    }
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSearch();
   };
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
       className={`flex items-center gap-2 rounded-xl border bg-muted/50 px-3.5 py-2 transition-all duration-200 ${
         focused
           ? "border-primary/40 bg-background shadow-sm ring-2 ring-primary/10"
@@ -36,7 +34,12 @@ export function SearchBar() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setQuery("");
+            e.currentTarget.blur();
+          }
+        }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder="Search reviews..."
@@ -44,12 +47,12 @@ export function SearchBar() {
       />
       {query && (
         <button
-          onClick={handleSearch}
+          type="submit"
           className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
         >
           Go
         </button>
       )}
-    </div>
+    </form>
   );
 }

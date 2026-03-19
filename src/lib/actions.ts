@@ -380,7 +380,7 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
           .select()
           .from(reviews)
           .where(
-            sql`(${reviews.text} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
+            sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
           )
           .orderBy(desc(reviews.createdAt))
           .limit(limit)
@@ -388,7 +388,7 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
       : await db
           .select()
           .from(reviews)
-          .where(ilike(reviews.text, q))
+          .where(sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`)
           .orderBy(desc(reviews.createdAt))
           .limit(limit)
           .offset(offset);
@@ -399,12 +399,12 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
           .select({ c: sql<number>`count(*)` })
           .from(reviews)
           .where(
-            sql`(${reviews.text} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
+            sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
           )
       : await db
           .select({ c: sql<number>`count(*)` })
           .from(reviews)
-          .where(ilike(reviews.text, q));
+          .where(sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`);
 
   const total = Number(countResult[0]?.c ?? 0);
 
