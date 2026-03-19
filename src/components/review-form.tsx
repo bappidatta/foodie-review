@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { MediaUpload } from "@/components/media-upload";
 import { TagInput } from "@/components/tag-input";
 import { StarRating } from "@/components/star-rating";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin, Camera, MessageSquare, Hash } from "lucide-react";
 
 export function ReviewForm() {
   const [text, setText] = useState("");
@@ -38,53 +38,77 @@ export function ReviewForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-2">
-        <Label htmlFor="restaurant-name">Restaurant / Place</Label>
+        <Label htmlFor="restaurant-name" className="flex items-center gap-1.5 text-sm font-semibold">
+          <MapPin className="size-4 text-primary" />
+          Restaurant / Place
+        </Label>
         <Input
           id="restaurant-name"
           placeholder="e.g. Joe's Pizza, Mom's Kitchen..."
           value={restaurantName}
           onChange={(e) => setRestaurantName(e.target.value)}
           maxLength={200}
+          className="h-11 rounded-xl"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Rating</Label>
-        <StarRating value={rating} onChange={setRating} size="lg" />
+        <Label className="flex items-center gap-1.5 text-sm font-semibold">
+          Rating
+        </Label>
+        <div className="rounded-xl border border-border/40 bg-muted/30 p-4">
+          <StarRating value={rating} onChange={setRating} size="lg" />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="media">Photos & Videos</Label>
+        <Label htmlFor="media" className="flex items-center gap-1.5 text-sm font-semibold">
+          <Camera className="size-4 text-primary" />
+          Photos & Videos
+        </Label>
         <MediaUpload value={media} onChange={setMedia} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="review-text">Your Review</Label>
+        <Label htmlFor="review-text" className="flex items-center gap-1.5 text-sm font-semibold">
+          <MessageSquare className="size-4 text-primary" />
+          Your Review
+        </Label>
         <Textarea
           id="review-text"
           placeholder="What did you eat? How was it? Share your experience..."
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={1000}
-          rows={4}
+          rows={5}
           required
+          className="min-h-[120px] rounded-xl resize-none"
         />
-        <p className="text-xs text-muted-foreground text-right">
-          {text.length}/1000
-        </p>
+        <div className="flex justify-end">
+          <span className={`text-xs ${text.length > 900 ? "text-destructive" : "text-muted-foreground"}`}>
+            {text.length}/1000
+          </span>
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label>Tags</Label>
+        <Label className="flex items-center gap-1.5 text-sm font-semibold">
+          <Hash className="size-4 text-primary" />
+          Tags
+        </Label>
         <TagInput value={tags} onChange={setTags} />
       </div>
 
-      <Button type="submit" className="w-full" disabled={pending || !text.trim()}>
+      <Button
+        type="submit"
+        className="h-12 w-full rounded-xl text-base font-semibold"
+        disabled={pending || !text.trim()}
+      >
         {pending ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" />
+            <Loader2 className="mr-2 size-5 animate-spin" />
             Posting...
           </>
         ) : (

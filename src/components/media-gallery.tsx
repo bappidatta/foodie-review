@@ -17,13 +17,13 @@ export function MediaGallery({ items }: { items: MediaItem[] }) {
   return (
     <div className="space-y-3">
       {/* Main display */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-muted shadow-inner">
         {active.type === "image" ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={active.url}
             alt="Food review media"
-            className="h-full w-full object-contain"
+            className="h-full w-full object-contain transition-opacity duration-300"
           />
         ) : (
           <video
@@ -43,10 +43,10 @@ export function MediaGallery({ items }: { items: MediaItem[] }) {
               key={i}
               type="button"
               onClick={() => setActiveIndex(i)}
-              className={`relative size-16 shrink-0 overflow-hidden rounded-md border-2 transition-colors ${
+              className={`relative size-18 shrink-0 overflow-hidden rounded-xl transition-all duration-200 ${
                 i === activeIndex
-                  ? "border-primary"
-                  : "border-transparent opacity-60 hover:opacity-100"
+                  ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                  : "opacity-50 hover:opacity-80"
               }`}
             >
               {item.type === "image" ? (

@@ -50,14 +50,18 @@ export function LikeButton({ reviewId, initialLiked, initialCount }: LikeButtonP
       onClick={handleClick}
       disabled={pending}
       aria-label={liked ? "Unlike review" : "Like review"}
-      className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-all active:scale-90 disabled:opacity-50 ${
+      className={`group/like flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 ${
         liked
-          ? "text-red-500 hover:text-red-400"
-          : "text-muted-foreground hover:text-red-400"
+          ? "bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
+          : "text-muted-foreground hover:bg-muted hover:text-red-400"
       }`}
     >
-      <Heart className={`size-5 ${liked ? "fill-current" : ""}`} />
-      <span className="font-medium">{count}</span>
+      <Heart
+        className={`size-5 transition-transform duration-200 group-hover/like:scale-110 ${
+          liked ? "fill-current" : ""
+        }`}
+      />
+      <span>{count}</span>
     </button>
   );
 }

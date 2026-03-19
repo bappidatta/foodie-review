@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Film, Heart, MapPin, Star } from "lucide-react";
@@ -18,8 +17,8 @@ export function ReviewCard({ review }: ReviewCardProps) {
   const firstMedia = review.media[0];
 
   return (
-    <Link href={`/review/${review.id}`}>
-      <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+    <Link href={`/review/${review.id}`} className="group block">
+      <article className="overflow-hidden rounded-2xl border border-border/40 bg-card shadow-sm transition-all duration-300 hover:border-border/80 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
         {/* Media preview */}
         {firstMedia && (
           <div className="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -28,7 +27,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
               <img
                 src={firstMedia.url}
                 alt="Food review"
-                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
               <div className="relative h-full w-full">
@@ -37,82 +36,99 @@ export function ReviewCard({ review }: ReviewCardProps) {
                   className="h-full w-full object-cover"
                   muted
                 />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Film className="size-10 text-white drop-shadow-lg" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm">
+                    <Film className="size-6 text-white" />
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            {/* Media count */}
             {review.media.length > 1 && (
-              <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
-                +{review.media.length - 1}
+              <span className="absolute bottom-3 right-3 rounded-lg bg-black/50 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                +{review.media.length - 1} more
               </span>
             )}
-            {/* Rating overlay */}
-            <div className="absolute top-2 left-2 flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-0.5">
-              <Star className="size-3 fill-amber-400 text-amber-400" />
-              <span className="text-xs font-medium text-white">{review.rating}</span>
+
+            {/* Rating pill */}
+            <div className="absolute top-3 left-3 flex items-center gap-1 rounded-lg bg-black/50 px-2.5 py-1 backdrop-blur-sm">
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-xs font-semibold text-white">{review.rating}</span>
             </div>
           </div>
         )}
 
-        <CardHeader className="pb-2">
+        <div className="p-4">
           {/* Restaurant name */}
           {review.restaurantName && (
-            <div className="flex items-center gap-1 text-sm font-semibold text-primary">
-              <MapPin className="size-3.5 shrink-0" />
-              <span className="truncate">{review.restaurantName}</span>
+            <div className="mb-2 flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0 text-primary" />
+              <span className="truncate text-sm font-semibold text-primary">{review.restaurantName}</span>
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <Avatar className="size-6">
+
+          {/* Author row */}
+          <div className="flex items-center gap-2.5">
+            <Avatar className="size-7 ring-2 ring-background">
               <AvatarImage src={review.author.image ?? ""} />
-              <AvatarFallback className="text-xs">
+              <AvatarFallback className="text-xs font-medium">
                 {review.author.name?.charAt(0)?.toUpperCase() ?? "U"}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">{review.author.name}</span>
-            <span className="ml-auto text-xs text-muted-foreground">
-              {new Date(review.createdAt).toLocaleDateString()}
+            <div className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium">{review.author.name}</span>
+            </div>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {new Date(review.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
             </span>
           </div>
+
           {/* Rating (shown when no media) */}
           {!firstMedia && (
-            <div className="flex items-center gap-0.5">
+            <div className="mt-2 flex items-center gap-0.5">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
                   key={s}
-                  className={`size-3.5 ${
+                  className={`size-4 ${
                     s <= review.rating
                       ? "fill-amber-400 text-amber-400"
-                      : "text-muted-foreground/30"
+                      : "text-muted-foreground/20"
                   }`}
                 />
               ))}
             </div>
           )}
-        </CardHeader>
 
-        <CardContent className="pb-2">
-          <p className="line-clamp-3 text-sm">{review.text}</p>
-        </CardContent>
+          {/* Review text */}
+          <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {review.text}
+          </p>
 
-        {review.tags.length > 0 && (
-          <CardFooter className="flex-wrap gap-1 pt-0 pb-1">
-            {review.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                #{tag}
-              </Badge>
-            ))}
-          </CardFooter>
-        )}
-
-        <CardFooter className="pt-0">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Heart className="size-3" />
-            <span>{review.likeCount ?? 0}</span>
+          {/* Tags & likes */}
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <div className="flex min-w-0 flex-wrap gap-1">
+              {review.tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-[11px] font-normal">
+                  #{tag}
+                </Badge>
+              ))}
+              {review.tags.length > 3 && (
+                <span className="text-[11px] text-muted-foreground">
+                  +{review.tags.length - 3}
+                </span>
+              )}
+            </div>
+            <div className="flex shrink-0 items-center gap-1 text-muted-foreground">
+              <Heart className="size-3.5" />
+              <span className="text-xs font-medium">{review.likeCount ?? 0}</span>
+            </div>
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </article>
     </Link>
   );
 }

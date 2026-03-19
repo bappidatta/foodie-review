@@ -1,14 +1,13 @@
 import { getFeed } from "@/lib/actions";
-import { ReviewCard } from "@/components/review-card";
+import { ReviewFeed } from "@/components/review-feed";
 import { UtensilsCrossed } from "lucide-react";
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; sort?: string }>;
+  searchParams: Promise<{ sort?: string }>;
 }) {
-  const { page: pageStr, sort: sortStr } = await searchParams;
-  const page = Math.max(1, parseInt(pageStr ?? "1", 10));
+  const { sort: sortStr } = await searchParams;
   const validSorts = ["newest", "popular", "top-rated"] as const;
   const sort = validSorts.includes(sortStr as typeof validSorts[number])
     ? (sortStr as typeof validSorts[number])
@@ -16,93 +15,37 @@ export default async function HomePage({
 
   let feed;
   try {
-    feed = await getFeed(page, 12, sort);
+    feed = await getFeed(1, 12, sort);
   } catch {
     feed = null;
   }
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
-          <UtensilsCrossed className="mr-2 inline size-7 text-orange-500" />
-          Foodie Review
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Discover and share honest food reviews
-        </p>
-      </div>
-
-      {/* Sort tabs */}
-      <div className="mb-6 flex gap-2">
-        <a
-          href={`/?sort=newest`}
-          className={`rounded-md border px-4 py-1.5 text-sm transition-colors ${
-            sort === "newest"
-              ? "bg-foreground text-background"
-              : "hover:bg-muted"
-          }`}
-        >
-          Latest
-        </a>
-        <a
-          href={`/?sort=popular`}
-          className={`rounded-md border px-4 py-1.5 text-sm transition-colors ${
-            sort === "popular"
-              ? "bg-foreground text-background"
-              : "hover:bg-muted"
-          }`}
-        >
-          Popular
-        </a>
-        <a
-          href={`/?sort=top-rated`}
-          className={`rounded-md border px-4 py-1.5 text-sm transition-colors ${
-            sort === "top-rated"
-              ? "bg-foreground text-background"
-              : "hover:bg-muted"
-          }`}
-        >
-          Top Rated
-        </a>
-      </div>
-
-      {!feed || feed.reviews.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-lg text-muted-foreground">
-            No reviews yet. Be the first to share!
+    <div className="animate-fade-in">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-border/40 bg-gradient-to-b from-primary/5 via-background to-background">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+        <div className="container relative mx-auto max-w-6xl px-4 py-16 text-center sm:py-20">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+            <UtensilsCrossed className="size-4" />
+            Discover Amazing Food
+          </div>
+          <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-5xl">
+            Share Your{" "}
+            <span className="text-gradient">Food Adventures</span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-lg text-base text-muted-foreground sm:text-lg">
+            Discover honest reviews, share your culinary experiences, and find your next favorite meal.
           </p>
         </div>
-      ) : (
-        <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {feed.reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-          </div>
+      </section>
 
-          {feed.total > feed.limit && (
-            <div className="mt-8 flex justify-center gap-2">
-              {page > 1 && (
-                <a
-                  href={`/?page=${page - 1}&sort=${sort}`}
-                  className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
-                >
-                  Previous
-                </a>
-              )}
-              {page * feed.limit < feed.total && (
-                <a
-                  href={`/?page=${page + 1}&sort=${sort}`}
-                  className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
-                >
-                  Next
-                </a>
-              )}
-            </div>
-          )}
-        </>
-      )}
+      {/* Feed Section — client component with sort tabs + infinite scroll */}
+      <ReviewFeed
+        initialReviews={feed?.reviews ?? []}
+        initialTotal={feed ? Number(feed.total) : 0}
+        initialSort={sort}
+      />
     </div>
   );
 }

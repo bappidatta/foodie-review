@@ -31,50 +31,103 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.002 80);
+  --foreground: oklch(0.16 0.01 40);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.16 0.01 40);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.6 0.17 40);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.16 0.01 40);
+  --primary: oklch(0.62 0.19 38);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.01 60);
+  --secondary-foreground: oklch(0.25 0.01 40);
+  --muted: oklch(0.955 0.005 60);
+  --muted-foreground: oklch(0.50 0.01 40);
+  --accent: oklch(0.94 0.02 55);
+  --accent-foreground: oklch(0.25 0.02 40);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.6 0.17 40);
+  --border: oklch(0.915 0.005 60);
+  --input: oklch(0.915 0.005 60);
+  --ring: oklch(0.62 0.19 38);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.65 0.17 40);
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.98 0 0);
+  --background: oklch(0.13 0.01 40);
+  --foreground: oklch(0.95 0.005 60);
+  --card: oklch(0.18 0.01 40);
+  --card-foreground: oklch(0.95 0.005 60);
+  --popover: oklch(0.18 0.01 40);
+  --popover-foreground: oklch(0.95 0.005 60);
+  --primary: oklch(0.68 0.18 38);
+  --primary-foreground: oklch(0.08 0.01 40);
+  --secondary: oklch(0.24 0.01 40);
+  --secondary-foreground: oklch(0.93 0.005 60);
+  --muted: oklch(0.22 0.01 40);
+  --muted-foreground: oklch(0.65 0.01 40);
+  --accent: oklch(0.24 0.02 40);
+  --accent-foreground: oklch(0.93 0.01 60);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.65 0.17 40);
+  --border: oklch(0.26 0.01 40);
+  --input: oklch(0.26 0.01 40);
+  --ring: oklch(0.68 0.18 38);
+}
+
+* {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth page transitions */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+/* Staggered grid animation */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-card-enter {
+  animation: card-enter 0.45s ease-out both;
+}
+
+/* Shimmer loading placeholder */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, var(--muted) 25%, var(--accent) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Gradient text utility */
+.text-gradient {
+  background: linear-gradient(135deg, oklch(0.62 0.19 38), oklch(0.7 0.15 55));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .text-gradient {
+  background: linear-gradient(135deg, oklch(0.68 0.18 38), oklch(0.75 0.15 55));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

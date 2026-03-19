@@ -1,5 +1,6 @@
 import { searchReviews } from "@/lib/actions";
 import { ReviewCard } from "@/components/review-card";
+import { Search } from "lucide-react";
 
 export default async function SearchPage({
   searchParams,
@@ -12,8 +13,11 @@ export default async function SearchPage({
 
   if (!query) {
     return (
-      <div className="container mx-auto max-w-5xl px-4 py-8">
-        <p className="text-muted-foreground">Enter a search term to find reviews.</p>
+      <div className="container mx-auto max-w-6xl px-4 py-16 text-center animate-fade-in">
+        <div className="mx-auto rounded-2xl bg-muted/50 p-6 w-fit">
+          <Search className="size-10 text-muted-foreground/40" />
+        </div>
+        <p className="mt-4 text-muted-foreground">Enter a search term to find reviews.</p>
       </div>
     );
   }
@@ -28,43 +32,57 @@ export default async function SearchPage({
   const total = result?.total ?? 0;
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">
+    <div className="container mx-auto max-w-6xl px-4 py-10 animate-fade-in">
+      <div className="mb-8">
+        <p className="text-sm font-medium text-muted-foreground">Search results</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">
           {total} result{total !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
         </h1>
       </div>
 
       {!result || result.reviews.length === 0 ? (
-        <div className="py-16 text-center">
-          <p className="text-lg text-muted-foreground">
-            No reviews found for &ldquo;{query}&rdquo;
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="rounded-2xl bg-muted/50 p-6">
+            <Search className="size-10 text-muted-foreground/40" />
+          </div>
+          <p className="mt-4 text-lg font-medium text-muted-foreground">
+            No reviews found
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground/70">
+            Try different keywords or check the spelling
           </p>
         </div>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {result.reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {result.reviews.map((review, i) => (
+              <div
+                key={review.id}
+                className="animate-card-enter"
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                <ReviewCard review={review} />
+              </div>
             ))}
           </div>
 
           {result.total > result.limit && (
-            <div className="mt-8 flex justify-center gap-2">
+            <div className="mt-12 flex items-center justify-center gap-3">
               {page > 1 && (
                 <a
                   href={`/search?q=${encodeURIComponent(query)}&page=${page - 1}`}
-                  className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex items-center rounded-xl border border-border/60 bg-card px-5 py-2.5 text-sm font-medium shadow-sm transition-all hover:bg-muted hover:shadow-md"
                 >
-                  Previous
+                  &larr; Previous
                 </a>
               )}
+              <span className="text-sm text-muted-foreground">Page {page}</span>
               {page * result.limit < result.total && (
                 <a
                   href={`/search?q=${encodeURIComponent(query)}&page=${page + 1}`}
-                  className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex items-center rounded-xl border border-border/60 bg-card px-5 py-2.5 text-sm font-medium shadow-sm transition-all hover:bg-muted hover:shadow-md"
                 >
-                  Next
+                  Next &rarr;
                 </a>
               )}
             </div>
