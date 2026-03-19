@@ -54,7 +54,7 @@ export function SearchBar() {
         }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        placeholder="Search reviews..."
+        placeholder="Search reviews or locations..."
         className="w-32 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70 sm:w-56"
       />
       {query && (

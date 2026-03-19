@@ -27,7 +27,8 @@ export default async function ReviewDetailPage({
 
   const session = await auth();
   const isAuthor = session?.user?.id === review.authorId;
-  const encodedRestaurant = encodeURIComponent(review.restaurantName);
+  const mapsQuery = [review.restaurantName, review.location].filter(Boolean).join(", ");
+  const encodedRestaurant = encodeURIComponent(mapsQuery);
   const mapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodedRestaurant}`;
   const mapsEmbedUrl = `https://www.google.com/maps?q=${encodedRestaurant}&output=embed`;
 
@@ -56,19 +57,26 @@ export default async function ReviewDetailPage({
 
         {/* Restaurant name & rating */}
         <div className="mt-8 space-y-3">
-          {review.restaurantName && (
-            <div className="flex items-center gap-2">
+          {(review.restaurantName || review.location) && (
+            <div className="flex items-start gap-2">
               <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
                 <MapPin className="size-5 text-primary" />
               </div>
-              <span className="text-xl font-bold text-foreground">{review.restaurantName}</span>
+              <div>
+                {review.restaurantName && (
+                  <span className="block text-xl font-bold text-foreground">{review.restaurantName}</span>
+                )}
+                {review.location && (
+                  <span className="block text-sm text-muted-foreground">{review.location}</span>
+                )}
+              </div>
             </div>
           )}
           <StarRating value={review.rating} readonly size="md" />
         </div>
 
         {/* Location map */}
-        {review.restaurantName && (
+        {mapsQuery && (
           <section className="mt-6 overflow-hidden rounded-2xl border border-border/40 bg-card">
             <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
               <p className="text-sm font-semibold">Location</p>
@@ -84,7 +92,7 @@ export default async function ReviewDetailPage({
             </div>
             <div className="aspect-video w-full bg-muted/30">
               <iframe
-                title={`Map location for ${review.restaurantName}`}
+                title={`Map location for ${mapsQuery}`}
                 src={mapsEmbedUrl}
                 className="h-full w-full border-0"
                 loading="lazy"
@@ -122,7 +130,14 @@ export default async function ReviewDetailPage({
           <div className="flex items-center gap-1">
             {isAuthor && (
               <EditReviewDialog
-                review={{ id: review.id, text: review.text, tags: review.tags, restaurantName: review.restaurantName, rating: review.rating }}
+                review={{
+                  id: review.id,
+                  text: review.text,
+                  tags: review.tags,
+                  restaurantName: review.restaurantName,
+                  location: review.location,
+                  rating: review.rating,
+                }}
               />
             )}
             {isAuthor && (

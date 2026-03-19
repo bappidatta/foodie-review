@@ -25,6 +25,7 @@ const dummyUsers = [
 const dummyReviews = [
   {
     restaurantName: "Sakura Ramen House",
+    location: "Shibuya Crossing, Tokyo",
     rating: 5,
     text: "Absolutely the best tonkotsu ramen I've had outside of Japan. The broth is rich and creamy, simmered for 18 hours. The chashu pork melts in your mouth. The ajitama egg was perfectly soft-boiled. I also tried their spicy miso — equally incredible. The portions are generous and the noodles have the perfect chew. Will definitely be coming back every week!",
     tags: ["ramen", "japanese", "noodles", "must-try"],
@@ -35,6 +36,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "The Burger Joint",
+    location: "Williamsburg, Brooklyn",
     rating: 4,
     text: "Solid smash burgers with a great crust. The special sauce is addictive — tangy and slightly sweet. Fries are crispy on the outside and fluffy inside. The milkshakes are thick and creamy. Only downside is the wait time during peak hours, but worth it. The brioche bun holds everything together perfectly without getting soggy.",
     tags: ["burgers", "american", "comfort-food"],
@@ -44,6 +46,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Mama Rosa's Pizzeria",
+    location: "North Beach, San Francisco",
     rating: 5,
     text: "Authentic Neapolitan pizza with that perfect leopard-spotted crust. The Margherita is a masterpiece — San Marzano tomatoes, fresh mozzarella di bufala, and basil from their garden. Wood-fired at 900°F for 90 seconds. The Diavola with spicy salami is also fantastic. Great wine selection too. This place transports you straight to Naples.",
     tags: ["pizza", "italian", "wood-fired", "date-night"],
@@ -54,6 +57,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Golden Wok",
+    location: "Chinatown, Seattle",
     rating: 3,
     text: "Decent Chinese takeout spot. The kung pao chicken has good heat and plenty of peanuts. Fried rice is solid. However, the sweet and sour pork was a bit too heavy on the batter. Spring rolls were crispy though. Fast delivery and generous portions for the price. Good for a quick weeknight dinner when you don't feel like cooking.",
     tags: ["chinese", "takeout", "affordable"],
@@ -63,6 +67,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Taco Loco",
+    location: "Arts District, Los Angeles",
     rating: 5,
     text: "These street-style tacos are the real deal! The al pastor is carved fresh off the trompo with bits of caramelized pineapple. The carnitas are slow-cooked for 6 hours until fall-apart tender. Their handmade corn tortillas make all the difference. The green salsa verde has the perfect kick. This tiny spot has better tacos than places three times the price.",
     tags: ["tacos", "mexican", "street-food", "hidden-gem"],
@@ -73,6 +78,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Le Petit Café",
+    location: "SoHo, New York City",
     rating: 4,
     text: "Charming French café with incredible pastries. The croissants are perfectly laminated — shatteringly flaky outside, soft and buttery inside. The pain au chocolat is dangerously good. Espresso is well-pulled. The croque monsieur for lunch is loaded with gruyère. Lovely outdoor seating area. A bit pricey but the quality justifies it.",
     tags: ["french", "cafe", "pastries", "brunch"],
@@ -82,6 +88,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Seoul Kitchen",
+    location: "Gangnam, Seoul",
     rating: 4,
     text: "Fantastic Korean BBQ experience. The marinated bulgogi is tender and perfectly sweet-savory. The banchan spread is impressive — 8 different side dishes all freshly made. Kimchi jjigae is hearty and spicy. The soju cocktails are refreshing. Service is attentive and they help you grill if you're unsure. Great group dining spot.",
     tags: ["korean", "bbq", "group-dining"],
@@ -92,6 +99,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Pho 88",
+    location: "Little Saigon, San Jose",
     rating: 5,
     text: "The pho here is liquid gold. The beef broth is deeply aromatic with star anise and cinnamon, clearly simmered for hours. Generous portions of rare beef and brisket. The herbs and bean sprouts are always fresh. Their bánh mì is also excellent — crispy baguette with the perfect ratio of pâté, pickled veggies, and jalapeños. Ridiculously good value too.",
     tags: ["vietnamese", "pho", "soup", "best-value"],
@@ -101,6 +109,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Sweet Surrender Bakery",
+    location: "Capitol Hill, Washington DC",
     rating: 4,
     text: "A dessert lover's paradise. The tiramisu is cloud-like and not overly sweet. Red velvet cake is moist with the perfect cream cheese frosting. Their seasonal fruit tarts are beautiful and taste even better. The macarons rival Parisian ones. Only wish they had more seating. Pre-ordering is recommended for weekend specials.",
     tags: ["bakery", "desserts", "cakes", "sweets"],
@@ -111,6 +120,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Curry Palace",
+    location: "Brick Lane, London",
     rating: 4,
     text: "Rich, aromatic curries that warm your soul. The butter chicken is creamy and perfectly spiced — not too mild, not too hot. Garlic naan is pillowy and charred in all the right spots. The lamb biryani has beautifully fragrant basmati rice. Mango lassi is thick and refreshing. Generous portions. Great for sharing with family.",
     tags: ["indian", "curry", "spicy", "family-friendly"],
@@ -120,6 +130,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Ocean's Catch",
+    location: "Santa Monica Pier, California",
     rating: 3,
     text: "Fresh seafood with a nice waterfront view. The grilled salmon was cooked well and the lemon butter sauce was delicious. Fish and chips were decent — beer batter was light and crispy. However, the lobster bisque was a bit thin for my taste. Great cocktail menu. The sunset view from the patio makes up for any shortcomings. Good for a casual dinner out.",
     tags: ["seafood", "waterfront", "casual-dining"],
@@ -129,6 +140,7 @@ const dummyReviews = [
   },
   {
     restaurantName: "Green Bowl",
+    location: "Mission District, San Francisco",
     rating: 5,
     text: "Best health-conscious restaurant in town. The acai bowls are stunning — topped with fresh dragon fruit, granola, and honey. Buddha bowls are filling and flavorful with the tahini dressing being the star. Fresh-pressed juices are excellent. Everything is organic and locally sourced. Even my meat-loving friends enjoy eating here. Proof that healthy food can be delicious!",
     tags: ["healthy", "vegan", "bowls", "organic"],
@@ -214,6 +226,7 @@ async function seed() {
       .values({
         authorId: author.id,
         restaurantName: r.restaurantName,
+        location: r.location,
         rating: r.rating as 1 | 2 | 3 | 4 | 5,
         text: r.text,
       })

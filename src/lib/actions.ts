@@ -14,6 +14,7 @@ export async function createReview(formData: FormData) {
 
   const text = formData.get("text") as string;
   const restaurantName = (formData.get("restaurantName") as string) ?? "";
+  const location = (formData.get("location") as string) ?? "";
   const rating = Math.min(5, Math.max(1, parseInt(formData.get("rating") as string) || 5));
   const tagNames = (formData.get("tags") as string)
     .split(",")
@@ -28,7 +29,13 @@ export async function createReview(formData: FormData) {
 
   const [review] = await db
     .insert(reviews)
-    .values({ authorId: session.user.id, text: text.trim(), restaurantName: restaurantName.trim(), rating })
+    .values({
+      authorId: session.user.id,
+      text: text.trim(),
+      restaurantName: restaurantName.trim(),
+      location: location.trim(),
+      rating,
+    })
     .returning();
 
   if (mediaItems.length > 0) {
@@ -85,7 +92,7 @@ export async function deleteReview(reviewId: string) {
 // ── Update Review ──────────────────────────────────────
 export async function updateReview(
   reviewId: string,
-  data: { text: string; tags: string[]; restaurantName?: string; rating?: number }
+  data: { text: string; tags: string[]; restaurantName?: string; location?: string; rating?: number }
 ) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
@@ -105,6 +112,7 @@ export async function updateReview(
 
   const updateData: Record<string, unknown> = { text: data.text.trim(), updatedAt: new Date() };
   if (data.restaurantName !== undefined) updateData.restaurantName = data.restaurantName.trim();
+  if (data.location !== undefined) updateData.location = data.location.trim();
   if (data.rating !== undefined) updateData.rating = Math.min(5, Math.max(1, data.rating));
 
   await db
@@ -361,30 +369,73 @@ export async function getUserProfile(userId: string) {
   return { user, reviews: results };
 }
 
-// ── Search Reviews ─────────────────────────────────────
-export async function searchReviews(query: string, page = 1, limit = 12) {
-  const offset = (page - 1) * limit;
-  const q = `%${query}%`;
+// ── Restaurant Suggestions ───────────────────────────────
+export async function getRestaurantSuggestions(limit = 24) {
+  const recentReviews = await db
+    .select({
+      restaurantName: reviews.restaurantName,
+      location: reviews.location,
+      createdAt: reviews.createdAt,
+    })
+    .from(reviews)
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit * 4);
 
-  const tagMatches = await db
-    .select({ reviewId: reviewTags.reviewId })
-    .from(reviewTags)
-    .innerJoin(tags, eq(reviewTags.tagId, tags.id))
-    .where(ilike(tags.name, q));
+  const seen = new Set<string>();
+
+  return recentReviews
+    .filter((review) => review.restaurantName.trim())
+    .filter((review) => {
+      const key = `${review.restaurantName.trim().toLowerCase()}::${review.location.trim().toLowerCase()}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, limit)
+    .map((review) => ({
+      restaurantName: review.restaurantName,
+      location: review.location,
+    }));
+}
+
+// ── Search Reviews ─────────────────────────────────────
+export async function searchReviews(query: string, page = 1, limit = 12, location = "") {
+  const offset = (page - 1) * limit;
+  const trimmedQuery = query.trim();
+  const trimmedLocation = location.trim();
+  const q = `%${trimmedQuery}%`;
+  const locationQuery = `%${trimmedLocation}%`;
+
+  if (!trimmedQuery && !trimmedLocation) {
+    return { reviews: [], total: 0, page, limit };
+  }
+
+  const tagMatches = trimmedQuery
+    ? await db
+        .select({ reviewId: reviewTags.reviewId })
+        .from(reviewTags)
+        .innerJoin(tags, eq(reviewTags.tagId, tags.id))
+        .where(ilike(tags.name, q))
+    : [];
 
   const tagReviewIds = tagMatches.map((r) => r.reviewId);
 
-  const reviewerMatches = await db
-    .select({ userId: users.id })
-    .from(users)
-    .where(ilike(users.name, q));
+  const reviewerMatches = trimmedQuery
+    ? await db
+        .select({ userId: users.id })
+        .from(users)
+        .where(ilike(users.name, q))
+    : [];
 
   const reviewerIds = reviewerMatches.map((r) => r.userId);
 
-  const searchConditions = [
-    ilike(reviews.text, q),
-    ilike(reviews.restaurantName, q),
-  ];
+  const searchConditions = trimmedQuery
+    ? [
+        ilike(reviews.text, q),
+        ilike(reviews.restaurantName, q),
+        ilike(reviews.location, q),
+      ]
+    : [];
 
   if (tagReviewIds.length > 0) {
     searchConditions.push(inArray(reviews.id, tagReviewIds));
@@ -394,7 +445,12 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
     searchConditions.push(inArray(reviews.authorId, reviewerIds));
   }
 
-  const searchCondition = or(...searchConditions);
+  const textMatch = searchConditions.length > 0 ? or(...searchConditions) : undefined;
+  const locationMatch = trimmedLocation ? ilike(reviews.location, locationQuery) : undefined;
+  const searchCondition =
+    textMatch && locationMatch
+      ? and(textMatch, locationMatch)
+      : (textMatch ?? locationMatch);
 
   const feedReviews = await db
     .select()
@@ -582,4 +638,3 @@ export async function getComments(reviewId: string) {
     },
   }));
 }
-

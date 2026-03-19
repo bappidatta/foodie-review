@@ -72,10 +72,17 @@ export function ReviewCard({ review }: ReviewCardProps) {
 
         <div className="p-4">
           {/* Restaurant name */}
-          {review.restaurantName && (
-            <div className="mb-2 flex items-center gap-1.5">
-              <MapPin className="size-3.5 shrink-0 text-primary" />
-              <span className="truncate text-sm font-semibold text-primary">{review.restaurantName}</span>
+          {(review.restaurantName || review.location) && (
+            <div className="mb-2 flex items-start gap-1.5">
+              <MapPin className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              <div className="min-w-0">
+                {review.restaurantName && (
+                  <span className="block truncate text-sm font-semibold text-primary">{review.restaurantName}</span>
+                )}
+                {review.location && (
+                  <span className="block truncate text-xs text-muted-foreground">{review.location}</span>
+                )}
+              </div>
             </div>
           )}
 

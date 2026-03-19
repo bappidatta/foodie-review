@@ -17,6 +17,7 @@ interface EditReviewDialogProps {
     text: string;
     tags: string[];
     restaurantName: string;
+    location: string;
     rating: number;
   };
 }
@@ -25,6 +26,7 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(review.text);
   const [restaurantName, setRestaurantName] = useState(review.restaurantName);
+  const [location, setLocation] = useState(review.location);
   const [rating, setRating] = useState(review.rating);
   const [tagList, setTagList] = useState<string[]>(review.tags);
   const [saving, setSaving] = useState(false);
@@ -38,6 +40,7 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
         text: text.trim(),
         tags: tagList,
         restaurantName,
+        location,
         rating,
       });
       toast.success("Review updated!");
@@ -53,6 +56,7 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
   const handleCancel = () => {
     setText(review.text);
     setRestaurantName(review.restaurantName);
+    setLocation(review.location);
     setRating(review.rating);
     setTagList(review.tags);
     setOpen(false);
@@ -86,6 +90,16 @@ export function EditReviewDialog({ review }: EditReviewDialogProps) {
           value={restaurantName}
           onChange={(e) => setRestaurantName(e.target.value)}
           placeholder="e.g. Joe's Pizza"
+          maxLength={200}
+        />
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-sm font-medium">Location</p>
+        <Input
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Neighborhood, city, or address"
           maxLength={200}
         />
       </div>

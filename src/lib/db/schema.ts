@@ -19,6 +19,7 @@ export const reviews = pgTable("reviews", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   restaurantName: text("restaurant_name").notNull().default(""),
+  location: text("location").notNull().default(""),
   rating: smallint("rating").notNull().default(5),
   text: text("text").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

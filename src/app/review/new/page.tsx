@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getRestaurantSuggestions } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import { ReviewForm } from "@/components/review-form";
 import { ArrowLeft, Sparkles } from "lucide-react";
@@ -7,6 +8,13 @@ import Link from "next/link";
 export default async function NewReviewPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
+  let restaurantSuggestions: Awaited<ReturnType<typeof getRestaurantSuggestions>> = [];
+  try {
+    restaurantSuggestions = await getRestaurantSuggestions();
+  } catch {
+    restaurantSuggestions = [];
+  }
 
   return (
     <div className="animate-fade-in">
@@ -31,12 +39,12 @@ export default async function NewReviewPage() {
           </div>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">Write a Review</h1>
           <p className="mt-2 text-muted-foreground">
-            Share your food experience with photos, videos, and tags
+            Share your food experience with photos, videos, tags, and a searchable location
           </p>
         </div>
 
         <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm sm:p-8">
-          <ReviewForm />
+          <ReviewForm suggestions={restaurantSuggestions} />
         </div>
       </div>
     </div>
