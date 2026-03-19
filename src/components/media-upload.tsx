@@ -86,7 +86,10 @@ export function MediaUpload({
                 src={item.url}
                 alt="Upload preview"
                 className="h-full w-full object-cover"
-                onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = FALLBACK_IMG;
+                }}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">

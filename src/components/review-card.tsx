@@ -32,7 +32,10 @@ export function ReviewCard({ review }: ReviewCardProps) {
                 src={firstMedia.url}
                 alt="Food review"
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = FALLBACK_IMG;
+                }}
               />
             ) : (
               <div className="relative h-full w-full">
