@@ -374,37 +374,34 @@ export async function searchReviews(query: string, page = 1, limit = 12) {
 
   const tagReviewIds = tagMatches.map((r) => r.reviewId);
 
-  const feedReviews =
-    tagReviewIds.length > 0
-      ? await db
-          .select()
-          .from(reviews)
-          .where(
-            sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
-          )
-          .orderBy(desc(reviews.createdAt))
-          .limit(limit)
-          .offset(offset)
-      : await db
-          .select()
-          .from(reviews)
-          .where(sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`)
-          .orderBy(desc(reviews.createdAt))
-          .limit(limit)
-          .offset(offset);
+  const reviewerMatches = await db
+    .select({ userId: users.id })
+    .from(users)
+    .where(ilike(users.name, q));
 
-  const countResult =
-    tagReviewIds.length > 0
-      ? await db
-          .select({ c: sql<number>`count(*)` })
-          .from(reviews)
-          .where(
-            sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
-          )
-      : await db
-          .select({ c: sql<number>`count(*)` })
-          .from(reviews)
-          .where(sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`);
+  const reviewerIds = reviewerMatches.map((r) => r.userId);
+
+  const searchCondition =
+    tagReviewIds.length > 0 && reviewerIds.length > 0
+      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}) OR ${reviews.authorId} = ANY(${reviewerIds}))`
+      : tagReviewIds.length > 0
+      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.id} = ANY(${tagReviewIds}))`
+      : reviewerIds.length > 0
+      ? sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q} OR ${reviews.authorId} = ANY(${reviewerIds}))`
+      : sql`(${reviews.text} ILIKE ${q} OR ${reviews.restaurantName} ILIKE ${q})`;
+
+  const feedReviews = await db
+    .select()
+    .from(reviews)
+    .where(searchCondition)
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  const countResult = await db
+    .select({ c: sql<number>`count(*)` })
+    .from(reviews)
+    .where(searchCondition);
 
   const total = Number(countResult[0]?.c ?? 0);
 
