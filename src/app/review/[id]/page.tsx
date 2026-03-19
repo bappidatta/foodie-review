@@ -6,7 +6,7 @@ import { StarRating } from "@/components/star-rating";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Trash2, ArrowLeft } from "lucide-react";
+import { MapPin, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { LikeButton } from "@/components/like-button";
 import { CommentSection } from "@/components/comment-section";
@@ -27,6 +27,9 @@ export default async function ReviewDetailPage({
 
   const session = await auth();
   const isAuthor = session?.user?.id === review.authorId;
+  const encodedRestaurant = encodeURIComponent(review.restaurantName);
+  const mapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodedRestaurant}`;
+  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodedRestaurant}&output=embed`;
 
   return (
     <div className="animate-fade-in">
@@ -63,6 +66,33 @@ export default async function ReviewDetailPage({
           )}
           <StarRating value={review.rating} readonly size="md" />
         </div>
+
+        {/* Location map */}
+        {review.restaurantName && (
+          <section className="mt-6 overflow-hidden rounded-2xl border border-border/40 bg-card">
+            <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
+              <p className="text-sm font-semibold">Location</p>
+              <a
+                href={mapsSearchUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+              >
+                Open in Google Maps
+                <ExternalLink className="size-4" />
+              </a>
+            </div>
+            <div className="aspect-video w-full bg-muted/30">
+              <iframe
+                title={`Map location for ${review.restaurantName}`}
+                src={mapsEmbedUrl}
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </section>
+        )}
 
         {/* Author info */}
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-border/40 bg-card p-4">
